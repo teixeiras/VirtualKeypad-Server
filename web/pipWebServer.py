@@ -1,11 +1,15 @@
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-import cgi, pipInput, pipPSUtil, pipTransmission, urlparse,subprocess
+import cgi, pipInput, pipPSUtil, pipTransmission, urlparse,subprocess,imp
 
-def sendSuccess(self):
-    self.send_response(200)
-    self.send_header('Content-type', 'text/html')
-    self.end_headers()
-    self.wfile.write({"status":"1"})
+
+#Modules dependencies
+try:
+    imp.find_module('psutil')
+except ImportError:
+    print "You need to install psutil modules"
+    print "sudo pip install psutil"
+    print "No pip? sudo apt-get install build-essential python-dev python-pip"
+
 
 class handler(BaseHTTPRequestHandler):
     util =  pipPSUtil.pipPSUtil()
@@ -14,42 +18,38 @@ class handler(BaseHTTPRequestHandler):
     def bootRequest(self, path, arguments):
         if path == "/mode/reboot":
             subprocess.call(['sudo', 'reboot'])
-            sendSuccess
+            self.sendSuccess
 
         if path == "/mode/both":
             subprocess.call(['sudo', '/usr/local/bin/boottoes_kodi'])
-            sendSuccess
+            self.sendSuccess
 
         if path == "/mode/emulation":
             subprocess.call(['sudo', '/usr/local/bin/boottoes'])
-            sendSuccess
+            self.sendSuccess
 
         if path == "/mode/kodi":
             subprocess.call(['sudo', '/usr/local/bin/boottokodi'])
-            sendSuccess
+            self.sendSuccess
 
         if path == "/mode/xfce":
             subprocess.call(['sudo', '/usr/local/bin/boottoxfce'])
-            sendSuccess
+            self.sendSuccess
 
         if path == "/mode/terminal":
             subprocess.call(['sudo', '/usr/local/bin/boottoterminal'])
-            sendSuccess
+            self.sendSuccess
 
     def infoRequest(self, path, arguments):
         if path == "/info":
-            self.send_response(200)
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            self.wfile.write(handler.util.output())
+            self.sendMessage(handler.util.output())
 
+        if path == "/kill_process":
+            self.sendMessage(handler.util.kill_process(arguments['pid']))
 
     def transmissionRequest(self, path, arguments):
         if path == "/transmission":
-            self.send_response(200)
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            self.wfile.write(handler.transmission.output())
+            self.sendMessage(handler.transmission.output())
 
         print path
         if path == "/transmission_add":
@@ -61,18 +61,12 @@ class handler(BaseHTTPRequestHandler):
 
 
             if len(uri) == 0:
-                self.send_response(200)
-                self.send_header('Content-type', 'text/html')
-                self.end_headers()
+                self.sendError("Missing arguments")
                 return
 
             print  "The url to be added" + uri
 
-
-            self.send_response(200)
-            self.send_header('Content-type', 'text/html')
-            self.end_headers()
-            self.wfile.write(handler.transmission.add(uri))
+            self.sendMessage(handler.transmission.add(uri))
 
 
     def keyRequest(self, path, arguments):
@@ -80,7 +74,9 @@ class handler(BaseHTTPRequestHandler):
             print arguments
             print  "The key is " + arguments["key"]
             pipInput.pipInput.sharedInstance.sendKeyUsingKeyCode(arguments["key"])
-            sendSuccess
+            self.sendSuccess
+
+
 
     def do_GET(self):
         qs = {}
@@ -98,8 +94,13 @@ class handler(BaseHTTPRequestHandler):
         form = cgi.FieldStorage(
                 fp=self.rfile,
                 headers=self.headers,
-                environ={'CONTENT_TYPE':self.headers['Content-Type'],
-            })
+                 environ={'REQUEST_METHOD':'POST',
+                     'CONTENT_TYPE':self.headers['Content-Type'],
+                })
+
+        for item in form.list:
+            print item
+
 
         qs = {}
         path = self.path
@@ -109,12 +110,27 @@ class handler(BaseHTTPRequestHandler):
             qs = urlparse.parse_qs(tmp)
             form.update(qs)
 
+        print form
+        print path
 
         self.keyRequest(path, form)
         self.infoRequest(path, form)
         self.transmissionRequest(path, form)
         self.bootRequest(path, form)
         return
+
+    def sendSuccess(self):
+        self.sendMessage({"status":"1"})
+
+    def sendError(self, message):
+        self.sendMessage({"status":"0", "statusMessage":message})
+
+    def sendMessage(self, message):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(message)
+
 
 class pipWebServer(object):
 

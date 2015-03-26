@@ -1,38 +1,44 @@
-import threading, os, time, imp
-
-import pipBonjour
-import pipInput
-import pipCec
-from web import pipWebServer
+import threading, os, time,  sys, traceback
+from pipConfig import pipConfig
+from pipInput import pipInput
 
 
-name    = "virtualKeypad"
-regtype = "_virtualKeypad._tcp"
-port    = 1134
-
-#Modules dependencies
-try:
-    imp.find_module('psutil')
-except ImportError:
-    print "You need to install psutil modules"
-    print "sudo pip install psutil"
-    print "No pip? sudo apt-get install build-essential python-dev python-pip"
+pipInputObject = pipInput()
+pipConfig = pipConfig()
 
 
-pipInputObject = pipInput.pipInput()
+name =  pipConfig.sharedInstance.get(pipConfig.SECTION_NETWORK_SETTINGS,"name")
+regtype =  pipConfig.sharedInstance.get(pipConfig.SECTION_NETWORK_SETTINGS,"regtype")
+port =  int(pipConfig.sharedInstance.get(pipConfig.SECTION_NETWORK_SETTINGS,"port"))
 
-bonjour = pipBonjour.pipBonjour(name, regtype, port)
-thread = threading.Thread(target = bonjour.startModule)
-thread.start()
+if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "bonjour")):
+    import pipBonjour
+    bonjour = pipBonjour.pipBonjour(name, regtype, port)
+    thread = threading.Thread(target = bonjour.startModule)
+    thread.start()
 
 
-webserver = pipWebServer.pipWebServer(port)
-thread = threading.Thread(target = webserver.startModule)
-thread.start()
+if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "webservice")):
+    try:
+        from web import pipWebServer
+        webserver = pipWebServer.pipWebServer(port)
+        thread = threading.Thread(target = webserver.startModule)
+        thread.start()
+    except:
+        print "Exception in user code:"
+        print '-'*60
+        traceback.print_exc(file=sys.stdout)
+        print '-'*60
 
-cec = pipCec.pipCec(pipInputObject)
-thread = threading.Thread(target = cec.startModule)
-thread.start()
+
+
+if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "cec")):
+    import pipCec
+    cec = pipCec.pipCec(pipInputObject)
+    thread = threading.Thread(target = cec.startModule)
+    thread.start()
+
+
 try:
     while True:
         time.sleep(5)
