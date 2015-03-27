@@ -26,6 +26,7 @@ else:
     from urlparse import urlparse
     from urllib2 import urlopen
 
+
 def debug_httperror(error):
     """
     Log the Transmission RPC HTTP error.
@@ -49,6 +50,7 @@ def debug_httperror(error):
         )
     )
 
+
 def parse_torrent_id(arg):
     """Parse an torrent id or torrent hashString."""
     torrent_id = None
@@ -62,7 +64,7 @@ def parse_torrent_id(arg):
     elif isinstance(arg, string_types):
         try:
             torrent_id = int(arg)
-            if torrent_id >= 2**31:
+            if torrent_id >= 2 ** 31:
                 torrent_id = None
         except (ValueError, TypeError):
             pass
@@ -74,6 +76,7 @@ def parse_torrent_id(arg):
             except (ValueError, TypeError):
                 pass
     return torrent_id
+
 
 def parse_torrent_ids(args):
     """
@@ -115,6 +118,7 @@ def parse_torrent_ids(args):
             ids = [torrent_id]
     return ids
 
+
 """
 Torrent ids
 
@@ -129,12 +133,14 @@ possible to provide a argument called ``timeout``. Timeout is only effective
 when using Python 2.6 or later and the default timeout is 30 seconds.
 """
 
+
 class Client(object):
     """
     Client is the class handling the Transmission JSON-RPC client protocol.
     """
 
-    def __init__(self, address='localhost', port=DEFAULT_PORT, user=None, password=None, http_handler=None, timeout=None):
+    def __init__(self, address='localhost', port=DEFAULT_PORT, user=None, password=None, http_handler=None,
+                 timeout=None):
         if isinstance(timeout, (integer_types, float)):
             self._query_timeout = float(timeout)
         else:
@@ -204,7 +210,8 @@ class Client(object):
         if timeout is None:
             timeout = self._query_timeout
         while True:
-            LOGGER.debug(json.dumps({'url': self.url, 'headers': headers, 'query': query, 'timeout': timeout}, indent=2))
+            LOGGER.debug(
+                json.dumps({'url': self.url, 'headers': headers, 'query': query, 'timeout': timeout}, indent=2))
             try:
                 result = self.http_handler.request(self.url, query, headers, timeout)
                 break
@@ -245,7 +252,7 @@ class Client(object):
             raise ValueError('request require ids')
 
         query = json.dumps({'tag': self._sequence, 'method': method
-                            , 'arguments': arguments})
+            , 'arguments': arguments})
         self._sequence += 1
         start = time.time()
         http_data = self._http_query(query, timeout)
@@ -348,7 +355,7 @@ class Client(object):
         """
         if self.rpc_version < version:
             LOGGER.warning('Using feature not supported by server. RPC version for server %d, feature introduced in %d.'
-                % (self.rpc_version, version))
+                           % (self.rpc_version, version))
 
     def add_torrent(self, torrent, timeout=None, **kwargs):
         """
@@ -476,7 +483,7 @@ class Client(object):
         """
         self._rpc_version_warning(3)
         self._request('torrent-remove',
-                    {'delete-local-data':rpc_bool(delete_data)}, ids, True, timeout=timeout)
+                      {'delete-local-data': rpc_bool(delete_data)}, ids, True, timeout=timeout)
 
     def remove(self, ids, delete_data=False, timeout=None):
         """
@@ -742,7 +749,7 @@ class Client(object):
         args = {}
         for key, value in iteritems(kwargs):
             argument = make_rpc_name(key)
-            (arg, val) = argument_value_convert('torrent-set' , argument, value, self.rpc_version)
+            (arg, val) = argument_value_convert('torrent-set', argument, value, self.rpc_version)
             args[arg] = val
 
         if len(args) > 0:
@@ -814,7 +821,7 @@ class Client(object):
         """Move transfer to the bottom of the queue."""
         self._rpc_version_warning(14)
         self._request('queue-move-bottom', ids=ids, require_ids=True, timeout=timeout)
-        
+
     def queue_up(self, ids, timeout=None):
         """Move transfer up in the queue."""
         self._rpc_version_warning(14)
@@ -895,7 +902,7 @@ class Client(object):
             if key == 'encryption' and value not in ['required', 'preferred', 'tolerated']:
                 raise ValueError('Invalid encryption value')
             argument = make_rpc_name(key)
-            (arg, val) = argument_value_convert('session-set' , argument, value, self.rpc_version)
+            (arg, val) = argument_value_convert('session-set', argument, value, self.rpc_version)
             args[arg] = val
         if len(args) > 0:
             self._request('session-set', args, timeout=timeout)

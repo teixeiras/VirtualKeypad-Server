@@ -6,6 +6,7 @@ from pipplware.transmissionrpc.utils import Field
 
 from pipplware.transmissionrpc.six import iteritems, integer_types
 
+
 class Session(object):
     """
     Session is a class holding the session data for a Transmission daemon.
