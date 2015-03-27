@@ -1,6 +1,11 @@
 #!/usr/bin/python
 
-import sys, time, re, os, subprocess, uinput, pipInput
+import re
+import os
+import subprocess
+
+import uinput
+
 
 class pipCec(object):
 

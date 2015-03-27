@@ -1,6 +1,13 @@
-import threading, os, time,  sys, traceback
+import threading
+import os
+import time
+import sys
+import traceback
+
 from pipConfig import pipConfig
 from pipInput import pipInput
+from pipplware import pipCec, pipBonjour
+from pipplware.web import pipWebServer
 
 
 pipInputObject = pipInput()
@@ -12,7 +19,6 @@ regtype =  pipConfig.sharedInstance.get(pipConfig.SECTION_NETWORK_SETTINGS,"regt
 port =  int(pipConfig.sharedInstance.get(pipConfig.SECTION_NETWORK_SETTINGS,"port"))
 
 if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "bonjour")):
-    import pipBonjour
     bonjour = pipBonjour.pipBonjour(name, regtype, port)
     thread = threading.Thread(target = bonjour.startModule)
     thread.start()
@@ -20,7 +26,6 @@ if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "bonjour")):
 
 if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "webservice")):
     try:
-        from web import pipWebServer
         webserver = pipWebServer.pipWebServer(port)
         thread = threading.Thread(target = webserver.startModule)
         thread.start()
@@ -33,7 +38,6 @@ if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "webservice")):
 
 
 if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "cec")):
-    import pipCec
     cec = pipCec.pipCec(pipInputObject)
     thread = threading.Thread(target = cec.startModule)
     thread.start()

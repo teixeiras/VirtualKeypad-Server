@@ -1,8 +1,19 @@
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-import cgi, pipInput, pipPSUtil, pipTransmission, urlparse,subprocess,imp
+import cgi
+import urlparse
+import subprocess
+import imp
+
+import pipPSUtil
+
+
+
 
 
 #Modules dependencies
+from pipplware import pipInput
+from pipplware.web import pipTransmission
+
 try:
     imp.find_module('psutil')
 except ImportError:
@@ -98,25 +109,23 @@ class handler(BaseHTTPRequestHandler):
                      'CONTENT_TYPE':self.headers['Content-Type'],
                 })
 
-        for item in form.list:
-            print item
 
-
-        qs = {}
+        fields = {}
         path = self.path
 
         if '?' in path:
             path, tmp = path.split('?', 1)
+            qs = {}
             qs = urlparse.parse_qs(tmp)
-            form.update(qs)
+            fields.update(qs)
 
-        print form
-        print path
+        for key in form.keys():
+            fields[key] = form.getvalue(key)
 
-        self.keyRequest(path, form)
-        self.infoRequest(path, form)
-        self.transmissionRequest(path, form)
-        self.bootRequest(path, form)
+        self.keyRequest(path, fields)
+        self.infoRequest(path, fields)
+        self.transmissionRequest(path, fields)
+        self.bootRequest(path, fields)
         return
 
     def sendSuccess(self):

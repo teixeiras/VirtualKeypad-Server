@@ -1,4 +1,7 @@
-import pybonjour, select
+import select
+
+from pipplware import pybonjour
+
 
 def register_callback(sdRef, flags, errorCode, name, regtype, domain):
 	    if errorCode == pybonjour.kDNSServiceErr_NoError:

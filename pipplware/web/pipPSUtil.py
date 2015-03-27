@@ -6,16 +6,16 @@ class pipPSUtil(object):
     def kill_process(self, processId):
         print "Kill process"+ processId
 
-        p = psutil.Process(processId)
+        p = psutil.Process(int(float(processId)))
         p.terminate()
 
 
     def suspend_process(self, processId):
-        p = psutil.Process(processId)
+        p = psutil.Process(int(float(processId)))
         p.suspend()
 
     def resume_process(self, processId):
-        p = psutil.Process(processId)
+        p = psutil.Process(int(float(processId)))
         p.resume()
 
 
@@ -48,7 +48,7 @@ class pipPSUtil(object):
                 process["name"] = p.name()
                 process["cmdline"] = p.cmdline()
                 process["cpu"] = p.cpu_percent(interval=None)
-                process["memory"] = p.memory_percent()
+                process["memory"] = round(p.memory_percent(),2)
                 processes.append(process)
             except:
                 print "Exception in user code:"

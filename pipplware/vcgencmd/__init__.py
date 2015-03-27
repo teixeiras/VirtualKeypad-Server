@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .vcgencmd import *
+from .pipplware.vcgencmd.vcgencmd import *
 
 __version__ = '0.1.0'
 

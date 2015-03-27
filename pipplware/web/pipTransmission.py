@@ -1,5 +1,8 @@
-import transmissionrpc
 import json
+
+from pipplware import transmissionrpc
+
+
 class pipTransmission(object):
     def __init__(self, port=9091, user="pi", password="raspberry"):
         self.tc = transmissionrpc.Client('localhost', port, user, password)

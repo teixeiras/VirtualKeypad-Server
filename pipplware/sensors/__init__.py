@@ -4,7 +4,8 @@ import os
 from ctypes import *
 from ctypes.util import find_library
 
-from sensors import stdc
+from pipplware.sensors import stdc
+
 
 __version__ = '0.0.3'
 __date__ = '2014-08-17'
