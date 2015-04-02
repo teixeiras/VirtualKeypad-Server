@@ -15,7 +15,7 @@
 import sys
 
 import argparse
-from pipplware.vcgencmd import vcgencmd
+from pipplware.web import vcgencmd
 
 
 def __do(label, sources, function):

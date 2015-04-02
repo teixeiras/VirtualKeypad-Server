@@ -6,13 +6,9 @@ import imp
 
 import pipPSUtil
 
-
-
-
-
 #Modules dependencies
-from pipplware import pipInput
-from pipplware.web import pipTransmission
+import pipInput
+import pipTransmission
 
 try:
     imp.find_module('psutil')

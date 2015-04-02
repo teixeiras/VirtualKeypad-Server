@@ -1,7 +1,6 @@
 import json
 
-from pipplware import transmissionrpc
-
+import transmissionrpc
 
 class pipTransmission(object):
     def __init__(self, port=9091, user="pi", password="raspberry"):
@@ -10,7 +9,7 @@ class pipTransmission(object):
     def output(self):
         output = {"status":"1"}
 
-        output["torrents"] = [];
+        output["torrents"] = []
         for torrent in self.tc.get_torrents():
             torrentObj = {"name":torrent.get_name_string(),
                           "status":torrent._status(),

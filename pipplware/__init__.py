@@ -6,8 +6,8 @@ import traceback
 
 from pipConfig import pipConfig
 from pipInput import pipInput
-from pipplware import pipCec, pipBonjour
-from pipplware.web import pipWebServer
+import pipCec, pipBonjour
+from web import pipWebServer
 
 
 pipInputObject = pipInput()

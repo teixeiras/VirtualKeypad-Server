@@ -4,7 +4,7 @@
 
 import logging
 
-from pipplware.transmissionrpc.six import iteritems
+from six import iteritems
 
 
 LOGGER = logging.getLogger('transmissionrpc')

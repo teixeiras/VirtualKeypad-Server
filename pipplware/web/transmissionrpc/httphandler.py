@@ -4,7 +4,7 @@
 
 import sys
 
-from pipplware.transmissionrpc.error import HTTPHandlerError
+from error import HTTPHandlerError
 from six import PY3
 
 if PY3:

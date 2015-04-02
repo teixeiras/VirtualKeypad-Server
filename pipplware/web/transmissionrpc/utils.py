@@ -7,8 +7,8 @@ import datetime
 import logging
 from collections import namedtuple
 
-import pipplware.transmissionrpc.constants as constants
-from pipplware.transmissionrpc.constants import LOGGER
+import constants as constants
+from constants import LOGGER
 from six import string_types, iteritems
 
 

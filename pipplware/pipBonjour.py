@@ -1,6 +1,6 @@
 import select
 
-from pipplware import pybonjour
+import pybonjour
 
 
 def register_callback(sdRef, flags, errorCode, name, regtype, domain):

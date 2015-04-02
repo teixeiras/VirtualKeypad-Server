@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from pipplware import sensors
+from pipplware.web import sensors
 
 
 def main():
