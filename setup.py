@@ -9,11 +9,11 @@ setup(name='pipplware',
       author_email='gward@python.net',
       url='http://www.techtux.org/',
       packages=['pipplware',
-                'pipplware.web'
+                'pipplware.web',
                 'pipplware.web.sensors',
                 'pipplware.web.transmissionrpc',
                 'pipplware.web.vcgencmd',
                 'pipplware.web.xbmcjson',
                 'pipplware.web.transmissionrpc',
-                'pipplware.web'],
+                ],
      )
