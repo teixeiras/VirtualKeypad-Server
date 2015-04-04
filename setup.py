@@ -16,4 +16,6 @@ setup(name='pipplware',
                 'pipplware.web.xbmcjson',
                 'pipplware.web.transmissionrpc',
                 ],
+        data_files=[('/etc/pipplware/', ['daemon.cfg'])]
+
      )
