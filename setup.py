@@ -19,6 +19,6 @@ setup(name='pipplware',
       entry_points = {
         'console_scripts' : ['pipplware = pipplware.pipplware:main']
     },
-    data_files=[('/etc/pipplware/', ['deamon.cfg'])]
+    data_files=[('/etc/pipplware/', ['daemon.cfg'])]
 
  )
