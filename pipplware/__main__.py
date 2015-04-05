@@ -4,10 +4,10 @@ import time
 import sys
 import traceback
 
-from pipConfig import pipConfig
-from pipInput import pipInput
-import pipCec, pipBonjour
-from web import pipWebServer
+from pipplware.pipConfig import pipConfig
+from pipplware.pipInput import pipInput
+import pipplware.pipCec, pipplware.pipBonjour
+from pipplware.web import pipWebServer
 
 pipInputObject = pipInput()
 pipConfig = pipConfig()
@@ -18,7 +18,7 @@ def main():
     port =  int(pipConfig.sharedInstance.get(pipConfig.SECTION_NETWORK_SETTINGS,"port"))
 
     if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "bonjour")):
-        bonjour = pipBonjour.pipBonjour(name, regtype, port)
+        bonjour = pipplware.pipBonjour.pipBonjour(name, regtype, port)
         thread = threading.Thread(target = bonjour.startModule)
         thread.start()
 
@@ -37,7 +37,7 @@ def main():
 
 
     if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "cec")):
-        cec = pipCec.pipCec(pipInputObject)
+        cec = pipplware.pipCec.pipCec(pipInputObject)
         thread = threading.Thread(target = cec.startModule)
         thread.start()
 

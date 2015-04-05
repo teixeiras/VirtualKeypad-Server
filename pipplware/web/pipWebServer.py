@@ -1,12 +1,12 @@
 from bottle import request, run, post, route, get, auth_basic
-from pipConfig import pipConfig
+from pipplware.pipConfig import pipConfig
 import subprocess
 import imp
 
 import pipPSUtil
 
 # Modules dependencies
-import pipInput
+import pipplware.pipInput
 import pipTransmission
 
 try:
@@ -120,7 +120,7 @@ def TransmissionAddRequest():
 @auth_basic(check_pass)
 def KeyRequest():
     print  "The key is " + request.forms.get('key')
-    pipInput.pipInput.sharedInstance.sendKeyUsingKeyCode(request.forms.get('key'))
+    pipplware.pipInput.pipInput.sharedInstance.sendKeyUsingKeyCode(request.forms.get('key'))
     return sendSuccess
 
 
