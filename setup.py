@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='pipplware',
-      version='1.0',
+      version='1.0.2',
       description='pipplware daemon with multiple funcitions',
       author='Filipe Teixeira',
       author_email='gward@python.net',
