@@ -16,6 +16,9 @@ setup(name='pipplware',
                 'pipplware.web.xbmcjson',
                 'pipplware.web.transmissionrpc',
                 ],
-        data_files=[('/etc/pipplware/', ['daemon.cfg'])]
+      entry_points = {
+        'console_scripts' : ['pipplware = pipplware.pipplware:main']
+    },
+    data_files=[('/etc/pipplware/', ['deamon.cfg'])]
 
-     )
+ )
