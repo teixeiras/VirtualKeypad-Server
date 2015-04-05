@@ -80,7 +80,8 @@ def TerminalCmdRequest(self):
 
 util = pipPSUtil.pipPSUtil()
 
-@route("/info")
+@post("/info")
+@get("/info")
 @auth_basic(check_pass)
 def InfoRequest():
     print  "Info"
