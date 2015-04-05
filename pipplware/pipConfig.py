@@ -9,6 +9,7 @@ class ClassProperty(property):
 class pipConfig(object):
     SECTION_MODULES = "Modules"
     SECTION_NETWORK_SETTINGS = "Network"
+    SECTION_AUTHENTICATION = "Authtentication"
     config = ""
 
 

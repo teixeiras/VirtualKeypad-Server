@@ -1,0 +1,1 @@
+SUBSYSTEM=="net", DEVTYPE=="wlan", RUN+="/usr/bin/sudo -u juser /home/juser/path/script.sh"

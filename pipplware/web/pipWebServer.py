@@ -1,6 +1,5 @@
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-import cgi
-import urlparse
+from bottle import request, run, post, route, get, auth_basic
+from pipConfig import pipConfig
 import subprocess
 import imp
 
@@ -17,207 +16,117 @@ except ImportError:
     print "sudo pip install psutil"
     print "No pip? sudo apt-get install build-essential python-dev python-pip"
 
+
+def sendSuccess():
+    return sendMessage({"status": "1"})
+
+def sendError(message):
+    return sendMessage({"status": "0", "statusMessage": message})
+
+def sendMessage( message):
+    return message
+
+
+def check_pass(username, password):
+    usernameConfig = "pippplware"
+    passwordConfig = pipConfig.sharedInstance.get(pipConfig.SECTION_AUTHENTICATION, "password")
+
+    if username == usernameConfig and password == passwordConfig:
+        return True
+    return False
+
+@get("/mode/reboot")
+@post("/mode/reboot")
+@auth_basic(check_pass)
+def RebootCmdRequest():
+    subprocess.call(['sudo', 'reboot'])
+    return sendSuccess
+
+@get("mode/both")
+@post("mode/both")
+@auth_basic(check_pass)
+def BothCmdRequest():
+    subprocess.call(['sudo', '/usr/local/bin/boottoes_kodi'])
+    return sendSuccess
+
+@get("/mode/emulation")
+@post("/mode/emulation")
+@auth_basic(check_pass)
+def EmulationCmdRequest():
+    subprocess.call(['sudo', '/usr/local/bin/boottoes'])
+    return sendSuccess
+
+@get("/mode/kodi")
+@post("/mode/kodi")
+@auth_basic(check_pass)
+def KodiCmdRequest():
+    subprocess.call(['sudo', '/usr/local/bin/boottokodi'])
+    return sendSuccess
+
+@get("/mode/xfce")
+@post("/mode/xfce")
+@auth_basic(check_pass)
+def XFCECmdRequest():
+    subprocess.call(['sudo', '/usr/local/bin/boottoxfce'])
+    return sendSuccess
+
+
+@get("/mode/terminal")
+@post("/mode/terminal")
+@auth_basic(check_pass)
+def TerminalCmdRequest(self):
+    subprocess.call(['sudo', '/usr/local/bin/boottoterminal'])
+    return self.sendSuccess
+
 util = pipPSUtil.pipPSUtil()
+
+@route("/info")
+@auth_basic(check_pass)
+def InfoRequest():
+    print  "Info"
+    return sendMessage(util.output())
+
+
+@post("/kill_process")
+@auth_basic(check_pass)
+def KillProcessRequest():
+    return sendMessage(util.kill_process(request.forms.get('pid')))
+
+
 transmission = pipTransmission.pipTransmission()
+@get("/transmission")
+@post("/transmission")
+@auth_basic(check_pass)
+def TransmissionRequest():
+    return sendMessage(transmission.output())
 
 
-class Request(object):
-    def __init__(self, url, handler):
-        self.url = url
-        self.handler = handler
+@post("/transmission_add")
+@auth_basic(check_pass)
+def TransmissionAddRequest():
+    print "Add torrent"
 
-    def execute(self, arguments):
-        print "Not defined"
+    uri = request.forms.get('uri')
 
-
-    def sendSuccess(self):
-        self.sendMessage({"status": "1"})
-
-    def sendError(self, message):
-        self.sendMessage({"status": "0", "statusMessage": message})
-
-    def sendMessage(self, message):
-        self.handler.send_response(200)
-        self.handler.send_header('Content-type', 'text/html')
-        self.handler.end_headers()
-        self.handler.wfile.write(message)
-
-
-class RebootCmdRequest(Request):
-    def __init__(self, handler):
-        super(RebootCmdRequest, self).__init__("/mode/reboot", handler)
-
-    def execute(self, arguments):
-        subprocess.call(['sudo', 'reboot'])
-        self.sendSuccess
-
-
-class BothCmdRequest(Request):
-    def __init__(self, handler):
-        super(BothCmdRequest, self).__init__("mode/both", handler)
-
-    def execute(self, arguments):
-        subprocess.call(['sudo', '/usr/local/bin/boottoes_kodi'])
-        self.sendSuccess
-
-
-class EmulationCmdRequest(Request):
-    def __init__(self, handler):
-        super(EmulationCmdRequest, self).__init__("/mode/emulation", handler)
-
-    def execute(self, arguments):
-        subprocess.call(['sudo', '/usr/local/bin/boottoes'])
-        self.sendSuccess
-
-
-class KodiCmdRequest(Request):
-    def __init__(self, handler):
-        super(KodiCmdRequest, self).__init__("/mode/kodi", handler)
-
-    def execute(self, arguments):
-        subprocess.call(['sudo', '/usr/local/bin/boottokodi'])
-        self.sendSuccess
-
-
-class XFCECmdRequest(Request):
-    def __init__(self, handler):
-        super(XFCECmdRequest, self).__init__("/mode/xfce", handler)
-
-    def execute(self, arguments):
-        subprocess.call(['sudo', '/usr/local/bin/boottoxfce'])
-        self.sendSuccess
-
-
-class TerminalCmdRequest(Request):
-    def __init__(self, handler):
-        super(TerminalCmdRequest, self).__init__("/mode/terminal", handler)
-
-    def execute(self, arguments):
-        subprocess.call(['sudo', '/usr/local/bin/boottoterminal'])
-        self.sendSuccess
-
-
-class InfoRequest(Request):
-    def __init__(self, handler):
-        super(InfoRequest, self).__init__("/info", handler)
-
-    def execute(self, arguments):
-        self.sendMessage(util.output())
-
-
-class KillProcessRequest(Request):
-    def __init__(self, handler):
-        super(KillProcessRequest, self).__init__("/kill_process", handler)
-
-    def execute(self, arguments):
-        self.sendMessage(util.kill_process(arguments['pid']))
-
-
-class TransmissionRequest(Request):
-    def __init__(self, handler):
-        super(TransmissionRequest, self).__init__("/transmission", handler)
-
-    def execute(self, arguments):
-        self.sendMessage(transmission.output())
-
-
-class TransmissionAddRequest(Request):
-    def __init__(self, handler):
-        super(TransmissionAddRequest, self).__init__("/transmission_add", handler)
-
-    def execute(self, arguments):
-        print "Add torrent"
-
-        uri = ""
-        if 'uri' in arguments.keys():
-            uri = arguments['uri'][0]
-
-        if len(uri) == 0:
-            self.sendError("Missing arguments")
-            return
-
-        print  "The url to be added" + uri
-
-        self.sendMessage(transmission.add(uri))
-
-
-class KeyRequest(Request):
-    def __init__(self, handler):
-        super(KeyRequest, self).__init__("/key", handler)
-
-    def execute(self, arguments):
-        print arguments
-        print  "The key is " + arguments["key"]
-        pipInput.pipInput.sharedInstance.sendKeyUsingKeyCode(arguments["key"])
-        self.sendSuccess
-
-
-class Handler(BaseHTTPRequestHandler):
-
-    def route(self, path, arguments):
-        if not hasattr(self, 'requests'):
-            self.requests = []
-            self.requests.append(RebootCmdRequest(self))
-            self.requests.append(BothCmdRequest(self))
-            self.requests.append(EmulationCmdRequest(self))
-            self.requests.append(KodiCmdRequest(self))
-            self.requests.append(XFCECmdRequest(self))
-            self.requests.append(TerminalCmdRequest(self))
-
-            self.requests.append(InfoRequest(self))
-            self.requests.append(KillProcessRequest(self))
-
-            self.requests.append(TransmissionRequest(self))
-            self.requests.append(TransmissionAddRequest(self))
-
-            self.requests.append(KeyRequest(self))
-
-        for requestHandler in self.requests:
-            if requestHandler.url == path:
-                requestHandler.execute(arguments)
-
-
-    def do_GET(self):
-        qs = {}
-        path = self.path
-        if '?' in path:
-            path, tmp = path.split('?', 1)
-            qs = urlparse.parse_qs(tmp)
-
-        self.route(path, qs)
-
-
-    def do_POST(self):
-
-        form = cgi.FieldStorage(
-            fp=self.rfile,
-            headers=self.headers,
-            environ={'REQUEST_METHOD': 'POST',
-                     'CONTENT_TYPE': self.headers['Content-Type'],
-            })
-
-        fields = {}
-        path = self.path
-
-        if '?' in path:
-            path, tmp = path.split('?', 1)
-            qs = {}
-            qs = urlparse.parse_qs(tmp)
-            fields.update(qs)
-
-        for key in form.keys():
-            fields[key] = form.getvalue(key)
-
-        self.route(path, fields)
-
+    if len(uri) == 0:
+        sendError("Missing arguments")
         return
+    print  "The url to be added" + uri
+    return sendMessage(transmission.add(uri))
+
+@get("/key")
+@post("/key")
+@auth_basic(check_pass)
+def KeyRequest():
+    print  "The key is " + request.forms.get('key')
+    pipInput.pipInput.sharedInstance.sendKeyUsingKeyCode(request.forms.get('key'))
+    return sendSuccess
 
 
 class pipWebServer(object):
     def __init__(self, port):
-        print "Webservice at port: " + str(port)
-        self.httpd = HTTPServer(('0.0.0.0', port), Handler)
-
+        self.port = port
 
     def startModule(self):
-        self.httpd.serve_forever()
+        print "Webservice at port: " + str(self.port)
+        run(host='0.0.0.0', port=self.port, debug=True)
