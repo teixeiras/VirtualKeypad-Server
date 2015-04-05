@@ -15,6 +15,7 @@ class pipCec(object):
             self.DEVNULL = open(os.devnull, 'wb')
 
         def startModule(self):
+                print  "CEC Module started..."
                 proc = subprocess.Popen(['/usr/bin/cec-client',''],stdout=subprocess.PIPE,stderr=self.DEVNULL)
                 for line in iter(proc.stdout.readline,''):
                         for key in self.exactMatch.findall(line.rstrip()):

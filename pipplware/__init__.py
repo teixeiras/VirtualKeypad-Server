@@ -9,7 +9,6 @@ from pipplware.pipInput import pipInput
 import pipplware.pipCec, pipplware.pipBonjour
 from pipplware.web import pipWebServer
 
-
 pipInputObject = pipInput()
 pipConfig = pipConfig()
 
@@ -27,8 +26,8 @@ if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "bonjour")):
 if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "webservice")):
     try:
         webserver = pipWebServer.pipWebServer(port)
-        thread = threading.Thread(target = webserver.startModule)
-        thread.start()
+        webserver.startModule()
+
     except:
         print "Exception in user code:"
         print '-'*60

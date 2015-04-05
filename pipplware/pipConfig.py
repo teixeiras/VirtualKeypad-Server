@@ -28,7 +28,7 @@ class pipConfig(object):
             self.configFile = "/etc/pipplware/daemon.cfg"
 
         if os.path.isfile(self.configFile):
-            print "Using config file" + self.configFile
+            print "Using config file " + self.configFile
             pipConfig.config.read(self.configFile)
 
 
