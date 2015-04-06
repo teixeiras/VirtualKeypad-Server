@@ -4,10 +4,13 @@ import time
 import sys
 import traceback
 
+from pipInput import pipInput
+
 from pipplware.pipConfig import pipConfig
-from pipplware.pipInput import pipInput
-import pipplware.pipCec, pipplware.pipBonjour
+import pipCec.pipCec
+import pipplware.pipBonjour
 from pipplware.web import pipWebServer
+
 
 pipInputObject = pipInput()
 pipConfig = pipConfig()
@@ -36,9 +39,9 @@ if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "webservice")):
 
 
 
-if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "cec")):
-    cec = pipCec.pipCec(pipInputObject)
-    thread = threading.Thread(target = cec.startModule)
+if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "pipCec")):
+    pipCec = pipCec.pipCec(pipInputObject)
+    thread = threading.Thread(target = pipCec.startModule)
     thread.start()
 
 

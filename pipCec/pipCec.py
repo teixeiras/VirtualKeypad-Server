@@ -5,10 +5,7 @@ import os
 import subprocess
 
 import uinput
-
-
 class pipCec(object):
-
         def __init__(self, pipInputObject):
             self.pipInputObject = pipInputObject
             self.exactMatch = re.compile(r'key released: (\w+)', flags=re.IGNORECASE)

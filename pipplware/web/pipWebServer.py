@@ -1,12 +1,12 @@
-from bottle import request, run, post, route, get, auth_basic
-from pipplware.pipConfig import pipConfig
 import subprocess
 import imp
 
+from bottle import request, run, post, get, auth_basic
+from pipplware.pipConfig import pipConfig
 import pipPSUtil
 
+
 # Modules dependencies
-import pipplware.pipInput
 import pipTransmission
 
 try:

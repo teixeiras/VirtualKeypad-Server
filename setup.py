@@ -15,10 +15,14 @@ setup(name='pipplware',
                 'pipplware.web.vcgencmd',
                 'pipplware.web.xbmcjson',
                 'pipplware.web.transmissionrpc',
+                'pipCec',
+                'pipInput'
                 ],
       entry_points = {
-        'console_scripts' : ['pipplware = pipplware.pipplware:main']
+        'console_scripts' : ['pipplware = pipplware.pipplware:main',
+                             'cec-daemon = pipCec.pipCec:main']
     },
-    data_files=[('/etc/pipplware/', ['daemon.cfg'])]
+    data_files=[('/etc/pipplware/', ['daemon.cfg']),
+                ('/etc/init.d/', ['files/init/cec','files/init/pipplware'])]
 
  )
