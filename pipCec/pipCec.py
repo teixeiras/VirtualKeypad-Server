@@ -4,7 +4,8 @@ import re
 import os
 import subprocess
 
-import uinput
+from pipInput import customInput
+
 class pipCec(object):
         def __init__(self, pipInputObject):
             self.pipInputObject = pipInputObject
@@ -19,34 +20,34 @@ class pipCec(object):
                                 print "Key was pressed: "+key
 
                                 if key == "up":
-                                        self.pipInputObject.sendKeyUsingEvent(uinput.KEY_UP)
+                                        self.pipInputObject.sendKeyUsingEvent(customInput.KEY_UP)
 
                                 elif key == "left":
-                                        self.pipInputObject.sendKeyUsingEvent(uinput.KEY_LEFT)
+                                        self.pipInputObject.sendKeyUsingEvent(customInput.KEY_LEFT)
 
                                 elif key == "right":
-                                        self.pipInputObject.sendKeyUsingEvent(uinput.KEY_RIGHT)
+                                        self.pipInputObject.sendKeyUsingEvent(customInput.KEY_RIGHT)
 
                                 elif key == "down":
-                                        self.pipInputObject.sendKeyUsingEvent(uinput.KEY_DOWN)
+                                        self.pipInputObject.sendKeyUsingEvent(customInput.KEY_DOWN)
 
                                 elif key == "enter" or key == "select":
-                                        self.pipInputObject.sendKeyUsingEvent(uinput.KEY_ENTER)
+                                        self.pipInputObject.sendKeyUsingEvent(customInput.KEY_ENTER)
 
                                 elif key == "exit" or key == "return":
-                                        self.pipInputObject.sendKeyUsingEvent(uinput.KEY_BACKSPACE)
+                                        self.pipInputObject.sendKeyUsingEvent(customInput.KEY_BACKSPACE)
 
                                 elif key == "F4":
-                                        self.pipInputObject.sendKeyUsingEvent(uinput.KEY_RIGHTSHIFT)
+                                        self.pipInputObject.sendKeyUsingEvent(customInput.KEY_RIGHTSHIFT)
 
                                 elif key == "F1":
-                                        self.pipInputObject.sendKeyUsingEvent(uinput.KEY_RIGHTCTRL)
+                                        self.pipInputObject.sendKeyUsingEvent(customInput.KEY_RIGHTCTRL)
 
                                 elif key == "F3":
-                                        self.pipInputObject.sendKeyUsingEvent(uinput.KEY_PAGEUP)
+                                        self.pipInputObject.sendKeyUsingEvent(customInput.KEY_PAGEUP)
 
                                 elif key == "F2":
-                                        self.pipInputObject.sendKeyUsingEvent(uinput.KEY_PAGEDOWN)
+                                        self.pipInputObject.sendKeyUsingEvent(customInput.KEY_PAGEDOWN)
 
         def __del__(self):
                 self.DEVNULL.close()   

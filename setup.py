@@ -16,13 +16,14 @@ setup(name='pipplware',
                 'pipplware.web.xbmcjson',
                 'pipplware.web.transmissionrpc',
                 'pipCec',
-                'pipInput'
+                'pipInput',
                 ],
       entry_points = {
         'console_scripts' : ['pipplware = pipplware.pipplware:main',
                              'cec-daemon = pipCec.pipCec:main']
     },
     data_files=[('/etc/pipplware/', ['daemon.cfg']),
-                ('/etc/init.d/', ['files/init/cec','files/init/pipplware'])]
+                ('/etc/init.d/', ['files/init/cec','files/init/pipplware']),
+                ('/etc/udev/rules.d/', ['files/udev/40-wifi.rules','files/udev/40-pipplware.rules'])]
 
  )

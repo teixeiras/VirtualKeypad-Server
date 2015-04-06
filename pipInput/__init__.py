@@ -1,1 +1,1 @@
-import pipInput
+__author__ = 'teixeiras'
