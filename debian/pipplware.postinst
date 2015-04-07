@@ -2,5 +2,5 @@
 chmod u+x /etc/init.d/cec
 chmod u+x /etc/init.d/pipplware
 
-rc-update add cec default
-rc-update add cec pipplware
+update-rc.d cec defaults
+update-rc.d pipplware defaults

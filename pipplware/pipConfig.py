@@ -7,9 +7,20 @@ class ClassProperty(property):
 
 # Open child processes via os.system(), popen() or fork() and execv()
 class pipConfig(object):
+
+    """:type: string"""
     SECTION_MODULES = "Modules"
+
+    """@type: string"""
     SECTION_NETWORK_SETTINGS = "Network"
+
+    """:type: string"""
     SECTION_AUTHENTICATION = "Authtentication"
+
+    """:type: string"""
+    SECTION_INPUT = "Input"
+
+    """:type: pipConfig"""
     config = ""
 
 

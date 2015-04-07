@@ -10,7 +10,7 @@ from pipplware.pipConfig import pipConfig
 import pipCec.pipCec
 import pipplware.pipBonjour
 from pipplware.web import pipWebServer
-
+from pipplware.piSocket import WebSocketServer
 
 pipInputObject = pipInput()
 pipConfig = pipConfig()
@@ -42,6 +42,11 @@ if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "webservice")):
 if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "pipCec")):
     pipCec = pipCec.pipCec(pipInputObject)
     thread = threading.Thread(target = pipCec.startModule)
+    thread.start()
+
+if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "websocketserver")):
+    websocket = WebSocketServer()
+    thread = threading.Thread(target = websocket.startModule)
     thread.start()
 
 

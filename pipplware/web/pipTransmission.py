@@ -21,6 +21,9 @@ class pipTransmission(object):
 
         return json.dumps(output)
 
+    def addFile(self, filePath):
+        self.tc.add_torrent("file://" + filePath)
+
     def add(self, uri):
         self.tc.add_torrent(uri)
         return  json.dumps({"status":"1"})

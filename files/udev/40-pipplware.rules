@@ -1,1 +1,10 @@
-SUBSYSTEM=="misc", KERNEL=="uinput", MODE="0660", GROUP="uinput"
+ACTION=="add|change", KERNEL=="event[0-9]*", ENV{ID_VENDOR_ID}=="012a", ENV{ID_MODEL_ID}=="034b", ENV{ID_INPUT_KEYBOARD}="1", ENV{ID_INPUT_TABLET}="1"
+
+KERNEL=="uinput", MODE:="0666"
+
+SUBSYSTEM=="input", ATTRS{name}=="python-uinput", ENV{ID_INPUT_KEYBOARD}="1"
+
+SUBSYSTEM=="input", ATTRS{name}=="pipplware-controller-1", ENV{ID_INPUT_KEYBOARD}="1"
+SUBSYSTEM=="input", ATTRS{name}=="pipplware-controller-2", ENV{ID_INPUT_KEYBOARD}="1"
+SUBSYSTEM=="input", ATTRS{name}=="pipplware-controller-3", ENV{ID_INPUT_KEYBOARD}="1"
+SUBSYSTEM=="input", ATTRS{name}=="pipplware-controller-4", ENV{ID_INPUT_KEYBOARD}="1"

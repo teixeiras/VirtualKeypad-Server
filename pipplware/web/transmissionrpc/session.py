@@ -9,7 +9,7 @@ from six import iteritems, integer_types
 
 class Session(object):
     """
-    Session is a class holding the session data for a Transmission daemon.
+    piSession is a class holding the session data for a Transmission daemon.
 
     Access the session field can be done through attributes.
     The attributes available are the same as the session arguments in the

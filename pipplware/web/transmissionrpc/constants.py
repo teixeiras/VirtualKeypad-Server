@@ -98,7 +98,7 @@ TORRENT_ARGS = {
         'haveUnchecked': ('number', 1, None, None, None, 'Number of bytes of partial pieces.'),
         'haveValid': ('number', 1, None, None, None, 'Number of bytes of checksum verified data.'),
         'honorsSessionLimits': ('boolean', 5, None, None, None, 'True if session upload limits are honored'),
-        'id': ('number', 1, None, None, None, 'Session unique torrent id.'),
+        'id': ('number', 1, None, None, None, 'piSession unique torrent id.'),
         'isFinished': ('boolean', 9, None, None, None, 'True if the torrent is finished. Downloaded and seeded.'),
         'isPrivate': ('boolean', 1, None, None, None, 'True if the torrent is private.'),
         'isStalled': ('boolean', 14, None, None, None, 'True if the torrent has stalled (been idle for a long time).'),

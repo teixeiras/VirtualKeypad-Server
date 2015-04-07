@@ -1,10 +1,10 @@
 import subprocess
-import imp
-
+import imp, json
+from pipInput import pipInput
 from bottle import request, run, post, get, auth_basic
 from pipplware.pipConfig import pipConfig
 import pipPSUtil
-
+from pipplware.piSession.piSession import piSession
 
 # Modules dependencies
 import pipTransmission
@@ -84,9 +84,25 @@ util = pipPSUtil.pipPSUtil()
 @get("/info")
 @auth_basic(check_pass)
 def InfoRequest():
-    print  "Info"
-    return sendMessage(util.output())
 
+    websocketPort = pipConfig.sharedInstance.get(pipConfig.SECTION_INPUT, "websocket_port")
+
+    output = {"websocket_port": websocketPort,
+              "bonjour_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "bonjour")),
+              "webservice_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "webservice")),
+              "pipCec_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "pipCec")),
+              "websocketserver_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "websocketserver")),
+              "token":piSession.generateToken()
+    }
+
+    return sendMessage(json.dumps(output))
+
+
+@post("/stats")
+@get("/stats")
+@auth_basic(check_pass)
+def InfoRequest():
+    return sendMessage(util.output())
 
 @post("/kill_process")
 @auth_basic(check_pass)
@@ -115,12 +131,28 @@ def TransmissionAddRequest():
     print  "The url to be added" + uri
     return sendMessage(transmission.add(uri))
 
+@post("/transmission_add_file")
+@auth_basic(check_pass)
+def TransmissionAddRequest():
+    print "Add torrent by file"
+
+    file = request.forms.get('file')
+    if len(file) == 0:
+        sendError("Missing arguments")
+        return
+
+    fh = open("/tmp/file.torrent", "wb")
+    fh.write(file.decode('base64'))
+    fh.close()
+
+    return sendMessage(transmission.addFile("/tmp/file.torrent"))
+
 @get("/key")
 @post("/key")
 @auth_basic(check_pass)
 def KeyRequest():
     print  "The key is " + request.forms.get('key')
-    pipplware.pipInput.pipInput.sharedInstance.sendKeyUsingKeyCode(request.forms.get('key'))
+    pipInput.pipInput.sharedInstance.sendKeyUsingKeyCode(request.forms.get('key'))
     return sendSuccess
 
 

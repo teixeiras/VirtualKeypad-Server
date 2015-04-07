@@ -219,7 +219,7 @@ class Client(object):
                 if error.code == 409:
                     LOGGER.info('Server responded with 409, trying to set session-id.')
                     if request_count > 1:
-                        raise TransmissionError('Session ID negotiation failed.', error)
+                        raise TransmissionError('piSession ID negotiation failed.', error)
                     session_id = None
                     for key in list(error.headers.keys()):
                         if key.lower() == 'x-transmission-session-id':
@@ -834,7 +834,7 @@ class Client(object):
 
     def get_session(self, timeout=None):
         """
-        Get session parameters. See the Session class for more information.
+        Get session parameters. See the piSession class for more information.
         """
         self._request('session-get', timeout=timeout)
         self._update_server_version()
