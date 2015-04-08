@@ -1,16 +1,14 @@
-import threading
-import os
-import time
-import sys
-import traceback
+import threading, logging, os, time, sys, traceback
 
 from pipInput import pipInput
+import pipServices
 
 from pipplware.pipConfig import pipConfig
-import pipCec.pipCec
+from pipCec import pipCec
 import pipplware.pipBonjour
 from pipplware.web import pipWebServer
-from pipplware.piSocket import WebSocketServer
+
+from pipplware.piSocket import piSocket
 
 pipInputObject = pipInput()
 pipConfig = pipConfig()
@@ -22,32 +20,30 @@ port =  int(pipConfig.sharedInstance.get(pipConfig.SECTION_NETWORK_SETTINGS,"por
 
 if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "bonjour")):
     bonjour = pipBonjour.pipBonjour(name, regtype, port)
-    thread = threading.Thread(target = bonjour.startModule)
+    thread = threading.Thread(target = bonjour.start_module)
     thread.start()
 
+if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "websocketserver")):
+    server = piSocket()
+    thread = threading.Thread(target = server.start_module)
+    thread.start()
+"""
+if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "cec")):
+    pipcec = pipCec(pipInputObject)
+    thread = threading.Thread(target = pipcec.start_module)
+    thread.start()
+"""
 
 if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "webservice")):
     try:
         webserver = pipWebServer.pipWebServer(port)
-        webserver.startModule()
+        webserver.start_module()
 
     except:
         print "Exception in user code:"
         print '-'*60
         traceback.print_exc(file=sys.stdout)
         print '-'*60
-
-
-
-if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "pipCec")):
-    pipCec = pipCec.pipCec(pipInputObject)
-    thread = threading.Thread(target = pipCec.startModule)
-    thread.start()
-
-if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "websocketserver")):
-    websocket = WebSocketServer()
-    thread = threading.Thread(target = websocket.startModule)
-    thread.start()
 
 
 try:

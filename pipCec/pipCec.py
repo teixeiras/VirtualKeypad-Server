@@ -8,11 +8,11 @@ from pipInput import customInput
 
 class pipCec(object):
         def __init__(self, pipInputObject):
-            self.pipInputObject = pipInputObject
-            self.exactMatch = re.compile(r'key released: (\w+)', flags=re.IGNORECASE)
-            self.DEVNULL = open(os.devnull, 'wb')
+                self.pipInputObject = pipInputObject
+                self.exactMatch = re.compile(r'key released: (\w+)', flags=re.IGNORECASE)
+                self.DEVNULL = open(os.devnull, 'wb')
 
-        def startModule(self):
+        def start_module(self):
                 print  "CEC Module started..."
                 proc = subprocess.Popen(['/usr/bin/cec-client',''],stdout=subprocess.PIPE,stderr=self.DEVNULL)
                 for line in iter(proc.stdout.readline,''):
@@ -50,7 +50,7 @@ class pipCec(object):
                                         self.pipInputObject.sendKeyUsingEvent(customInput.KEY_PAGEDOWN)
 
         def __del__(self):
-                self.DEVNULL.close()   
+                self.DEVNULL.close()
 
 
        

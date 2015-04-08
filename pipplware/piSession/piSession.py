@@ -1,6 +1,6 @@
 __author__ = 'teixeiras'
-import os
-import binascii
+import random
+import string
 
 class piSession(object):
     clients = []
@@ -37,5 +37,5 @@ class piSession(object):
         return None
 
     @staticmethod
-    def generateToken():
-        return binascii.hexlify(os.random(16))
+    def generateToken(size=6, chars=string.ascii_uppercase + string.digits):
+        return ''.join(random.choice(chars) for _ in range(size))

@@ -1,80 +1,67 @@
 import logging, json, websocket, threading
 
-from pipplware.pipConfig import pipConfig
-from pipplware.pipInput import  pipInput
+from pipplware.pipInput import pipInput
 from pipplware.piSession import piSession
+from pipplware.pipConfig import pipConfig
 
-class WebSocketServer(websocket.WebSocket):
+from websocket import WebsocketServer
 
-    clients = list(None,None,None,None)
-
-    def __init__(self, client, server):
-
-        super(WebSocketServer, self).__init__(client, server)
-
-        for (i, client) in enumerate(WebSocketServer.clients):
-
-            if client == None:
-
-                WebSocketServer.clients[i] = self
-
-                break
+clients = [None, None, None, None]
 
 
-    def onmessage(self, data):
+def clientNumber(client):
+    for (i, client_object) in enumerate(clients):
 
-        super(WebSocketServer, self).onmessage(data)
-
-        data = json.loads(data)
-
-        logging.info("Got message: %s" % json.dumps(data, sort_keys=True, indent=4, separators=(',', ': ')))
-
-        if data["action"] == "key":
-
-            pipInput.pipInput.sharedInstance.sendKeyUsingKeyCode(data["content"]["key"])
+        if client == client_object:
+            return i
 
 
-        if data["action"] == "session":
+# Called for every client connecting (after handshake)
+def new_client(client, server):
+    for (i, client) in enumerate(clients):
 
-            self.session = piSession(self, data["content"]["token"])
+        if client == None:
+            clients[i] = client
 
-            self.session.input = self.clientNumber()
-
-            self.send("WELCOME %s" % self.session.token)
-
-
-    def clientNumber(self):
-
-        for (i, client) in enumerate(WebSocketServer.clients):
-
-            if client == self:
-
-                return i
+            break
 
 
-    def close(self):
+# Called for every client disconnecting
+def client_left(client, server):
+    print("Close connection")
+    for (i, client_object) in enumerate(clients):
 
-        logging.info("Close connection")
-
-        super(WebSocketServer, self).close()
-
-        for (i, client) in enumerate(WebSocketServer.clients):
-
-            if client == self:
-
-                WebSocketServer.clients[i] = None
+        if client == client_object:
+            clients[i] = None
 
 
-	def startModule(self):
-		logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+# Called when a client sends a message
+def message_received(client, server, message):
+    data = json.loads(message)
 
+    print("Got message: %s" % json.dumps(data, sort_keys=True, indent=4, separators=(',', ': ')))
+
+    if data["action"] == "key":
+        pipInput.pipInput.sharedInstance.sendKeyUsingKeyCode(data["content"]["key"])
+
+    if data["action"] == "session":
+        session = piSession(client, data["content"]["token"])
+
+        session.input = clientNumber()
+
+        session.send("WELCOME %s" % session.token)
+
+
+class piSocket(object):
+    def start_module(self):
         websocketPort = pipConfig.sharedInstance.get(pipConfig.SECTION_INPUT, "websocket_port")
 
-        logging.info("Opening websocket on: %s" % websocketPort)
+        server = WebsocketServer(int(websocketPort), "0.0.0.0")
 
-        server = websocket.WebSocketServer("localhost", websocketPort, WebSocketServer)
+        server.set_fn_new_client(new_client)
 
-        server_thread = threading.Thread(target=server.listen, args=[5])
+        server.set_fn_client_left(client_left)
 
-        server_thread.start()
+        server.set_fn_message_received(message_received)
 
+        server.run_forever()

@@ -4,7 +4,7 @@ from pipInput import pipInput
 from bottle import request, run, post, get, auth_basic
 from pipplware.pipConfig import pipConfig
 import pipPSUtil
-from pipplware.piSession.piSession import piSession
+from pipplware.piSession import piSession
 
 # Modules dependencies
 import pipTransmission
@@ -90,7 +90,7 @@ def InfoRequest():
     output = {"websocket_port": websocketPort,
               "bonjour_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "bonjour")),
               "webservice_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "webservice")),
-              "pipCec_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "pipCec")),
+              "pipCec_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "cec")),
               "websocketserver_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "websocketserver")),
               "token":piSession.generateToken()
     }
@@ -156,10 +156,30 @@ def KeyRequest():
     return sendSuccess
 
 
+@get("/apt_list")
+@post("/apt_list")
+@auth_basic(check_pass)
+def KeyRequest():
+    import apt_pkg
+    apt_pkg.init_config()
+    apt_pkg.init_system()
+    acquire = apt_pkg.Acquire()
+    slist = apt_pkg.SourceList()
+    slist.read_main_list()
+    slist.get_indexes(acquire, True)
+
+    output = {"packages":[]}
+    # Now print the URI of every item.
+    for item in acquire.items:
+        output["packages"].append(item.desc_uri)
+
+    return sendMessage(json.dumps(output))
+
+
 class pipWebServer(object):
     def __init__(self, port):
         self.port = port
 
-    def startModule(self):
+    def start_module(self):
         print "Webservice at port: " + str(self.port)
         run(host='0.0.0.0', port=self.port, debug=True)

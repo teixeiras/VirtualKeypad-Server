@@ -17,7 +17,7 @@ class pipBonjour(object):
                                      port = port,
                                      callBack = register_callback)
 
-	def startModule(self):
+	def start_module(self):
 		while True:
 			ready = select.select([self.sdRef], [], [])
 			if self.sdRef in ready[0]:

@@ -1,4 +1,6 @@
 import psutil, json, sys, traceback
+import vcgencmd
+
 class pipPSUtil(object):
     def __init__(self):
         psutil.cpu_percent(interval=1.0, percpu=True)
@@ -40,6 +42,7 @@ class pipPSUtil(object):
         output["process_list"] = processes
         """
 
+
         for pid in psutil.pids():
             try:
                 p = psutil.Process(pid)
@@ -57,4 +60,20 @@ class pipPSUtil(object):
                 print '-'*60
 
         output["processes"] = processes
+
+        output['ClockFrequencies']={"sources":vcgencmd.frequency_sources(),
+                                    "value":vcgencmd.measure_clock}
+
+        output['Voltages']={"sources":vcgencmd.voltage_sources(),
+                            "value":vcgencmd.measure_volts}
+
+        output['Temperatures']={"values":vcgencmd.measure_temp()}
+
+        output['Codecs']={"sources":vcgencmd.codec_sources(),
+                            "value":vcgencmd.codec_enabled}
+
+        output['MemoryAllocation']={"sources":vcgencmd.memory_sources(),
+                            "value":vcgencmd.get_mem}
+
+
         return json.dumps(output)

@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .pipplware.web.vcgencmd.vcgencmd import *
+from pipplware.web.vcgencmd import *
+import subprocess
 
 __version__ = '0.1.0'
 
