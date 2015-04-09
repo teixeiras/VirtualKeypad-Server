@@ -1,5 +1,9 @@
 import psutil, json, sys, traceback
-import vcgencmd
+from sys import platform as _platform
+if _platform != "darwin":
+    import vcgencmd
+
+
 
 class pipPSUtil(object):
     def __init__(self):
@@ -60,20 +64,21 @@ class pipPSUtil(object):
                 print '-'*60
 
         output["processes"] = processes
+        if _platform != "darwin":
 
-        output['ClockFrequencies']={"sources":vcgencmd.frequency_sources(),
-                                    "value":vcgencmd.measure_clock}
+            output['ClockFrequencies']={"sources":vcgencmd.frequency_sources(),
+                                        "value":vcgencmd.measure_clock}
 
-        output['Voltages']={"sources":vcgencmd.voltage_sources(),
-                            "value":vcgencmd.measure_volts}
+            output['Voltages']={"sources":vcgencmd.voltage_sources(),
+                                "value":vcgencmd.measure_volts}
 
-        output['Temperatures']={"values":vcgencmd.measure_temp()}
+            output['Temperatures']={"values":vcgencmd.measure_temp()}
 
-        output['Codecs']={"sources":vcgencmd.codec_sources(),
-                            "value":vcgencmd.codec_enabled}
+            output['Codecs']={"sources":vcgencmd.codec_sources(),
+                                "value":vcgencmd.codec_enabled}
 
-        output['MemoryAllocation']={"sources":vcgencmd.memory_sources(),
-                            "value":vcgencmd.get_mem}
+            output['MemoryAllocation']={"sources":vcgencmd.memory_sources(),
+                                "value":vcgencmd.get_mem}
 
 
         return json.dumps(output)

@@ -1,5 +1,5 @@
 import pipCec, time, os
-
+from pipCec import pipCec
 __author__ = 'teixeiras'
 from pipInput import pipInput
 if __name__ == '__main__':

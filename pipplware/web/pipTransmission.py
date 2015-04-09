@@ -4,10 +4,15 @@ import transmissionrpc
 
 class pipTransmission(object):
     def __init__(self, port=9091, user="pi", password="raspberry"):
-        self.tc = transmissionrpc.Client('localhost', port, user, password)
+        try:
+            self.tc = transmissionrpc.Client('localhost', port, user, password)
+        except:
+            self.tc = None
 
     def output(self):
         output = {"status":"1"}
+        if self.tc == None:
+            return output
 
         output["torrents"] = []
         for torrent in self.tc.get_torrents():
@@ -22,8 +27,14 @@ class pipTransmission(object):
         return json.dumps(output)
 
     def addFile(self, filePath):
+        if self.tc == None:
+            return
+
         self.tc.add_torrent("file://" + filePath)
 
     def add(self, uri):
+        if self.tc == None:
+            return
+
         self.tc.add_torrent(uri)
         return  json.dumps({"status":"1"})

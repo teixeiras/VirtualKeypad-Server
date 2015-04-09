@@ -1,10 +1,15 @@
 import subprocess
-import imp, json
+import imp
+import json
+
 from pipInput import pipInput
 from bottle import request, run, post, get, auth_basic
 from pipplware.pipConfig import pipConfig
 import pipPSUtil
 from pipplware.piSession import piSession
+
+from pipplware.web.bottle_websocket import GeventWebSocketServer
+from pipplware.web.bottle_websocket import websocket
 
 # Modules dependencies
 import pipTransmission
@@ -84,14 +89,9 @@ util = pipPSUtil.pipPSUtil()
 @get("/info")
 @auth_basic(check_pass)
 def InfoRequest():
-
-    websocketPort = pipConfig.sharedInstance.get(pipConfig.SECTION_INPUT, "websocket_port")
-
-    output = {"websocket_port": websocketPort,
-              "bonjour_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "bonjour")),
+    output = {"bonjour_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "bonjour")),
               "webservice_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "webservice")),
               "pipCec_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "cec")),
-              "websocketserver_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "websocketserver")),
               "token":piSession.generateToken()
     }
 
@@ -175,6 +175,22 @@ def KeyRequest():
 
     return sendMessage(json.dumps(output))
 
+@get('/websocket', apply=[websocket])
+def echo(ws):
+    while True:
+        msg = ws.receive()
+        data = json.loads(msg)
+        print("Got message: %s" % json.dumps(data, sort_keys=True, indent=4, separators=(',', ': ')))
+
+        if data["action"] == "key":
+            pipInput.pipInput.sharedInstance.sendKeyUsingKeyCode(data["content"]["key"])
+
+        if data["action"] == "session":
+            token=data["content"]["token"]
+            print token
+
+        return sendSuccess
+
 
 class pipWebServer(object):
     def __init__(self, port):
@@ -182,4 +198,4 @@ class pipWebServer(object):
 
     def start_module(self):
         print "Webservice at port: " + str(self.port)
-        run(host='0.0.0.0', port=self.port, debug=True)
+        run(host='0.0.0.0', port=self.port, debug=True, server=GeventWebSocketServer)
