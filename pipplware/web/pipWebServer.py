@@ -2,14 +2,14 @@ import subprocess
 import imp
 import json
 
-from pipInput import pipInput
 from bottle import request, run, post, get, auth_basic
 from pipplware.pipConfig import pipConfig
 import pipPSUtil
 from pipplware.piSession import piSession
-
+from pipplware.pipInput import pipInput
 from pipplware.web.bottle_websocket import GeventWebSocketServer
 from pipplware.web.bottle_websocket import websocket
+
 
 # Modules dependencies
 import pipTransmission
@@ -159,7 +159,7 @@ def KeyRequest():
 @get("/apt_list")
 @post("/apt_list")
 @auth_basic(check_pass)
-def KeyRequest():
+def packageList():
     import apt_pkg
     apt_pkg.init_config()
     apt_pkg.init_system()
@@ -179,17 +179,34 @@ def KeyRequest():
 def echo(ws):
     while True:
         msg = ws.receive()
+        if len(msg) == 0:
+            continue
+
         data = json.loads(msg)
         print("Got message: %s" % json.dumps(data, sort_keys=True, indent=4, separators=(',', ': ')))
 
         if data["action"] == "key":
-            pipInput.pipInput.sharedInstance.sendKeyUsingKeyCode(data["content"]["key"])
+            if "key" in data["content"]:
+                keys = data["content"]["key"].split(",")
+                pipInput.pipInput.sharedInstance.sendMultiKeyUsingKeyCode(keys)
+
 
         if data["action"] == "session":
             token=data["content"]["token"]
             print token
 
-        return sendSuccess
+
+        if data["action"] == "mouse":
+            pipInput.pipInput.sharedInstance.moveMouse(int(data["content"]["X"]),int(data["content"]["Y"]))
+
+        if data["action"] == "button":
+            print "mouse click " + data["content"]["button"]
+            if data["content"]["button"] == "2":
+                pipInput.pipInput.sharedInstance.clickMouseLeft()
+            if data["content"]["button"] == "3":
+                pipInput.pipInput.sharedInstance.clickMouseRight()
+
+        ws.send(sendSuccess)
 
 
 class pipWebServer(object):

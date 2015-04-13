@@ -1,11 +1,10 @@
-import threading, logging, os, time, sys, traceback
+import threading
 
-from pipInput import pipInput
 import pipServices
-
+from pipplware.pipCec import pipCec
 from pipplware.pipConfig import pipConfig
-from pipCec import pipCec
 from pipplware.pipBonjour import pipBonjour
+from pipplware.pipInput import pipInput
 from pipplware.web import pipWebServer
 
 pipInputObject = pipInput.pipInput()
@@ -22,8 +21,8 @@ if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "bonjour")):
     thread.start()
 
 if bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "cec")):
-    pipcec = pipCec(pipInputObject)
-    thread = threading.Thread(target = pipcec.start_module)
+    cec = pipCec(pipInputObject)
+    thread = threading.Thread(target = cec.start_module)
     thread.start()
 
 

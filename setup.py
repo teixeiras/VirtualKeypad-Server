@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, Extension
+module1 = Extension('pipInput', sources = ['hellomodule.c'])
 
 setup(name='pipplware',
       version='1.0.2',
@@ -15,11 +16,12 @@ setup(name='pipplware',
                 'pipplware.web.vcgencmd',
                 'pipplware.web.xbmcjson',
                 'pipplware.web.transmissionrpc',
+                'pipplware.web.bottle_websocket',
+                'pipplware.web.bottle_websocket.geventwebsocket',
                 'pipplware.piSession',
                 'pipplware.pipServices',
-                'pipplware.piSocket',
-                'pipCec',
-                'pipInput',
+                'pipplware.pipCec',
+                'pipplware.pipInput',
                 ],
       entry_points = {
         'console_scripts' : ['pipplware = pipplware.pipplware:main',
@@ -27,6 +29,8 @@ setup(name='pipplware',
     },
     data_files=[('/etc/pipplware/', ['files/daemon.cfg']),
                 ('/etc/init.d/', ['files/init/cec','files/init/pipplware']),
-                ('/etc/udev/rules.d/', ['files/udev/40-wifi.rules','files/udev/40-pipplware.rules'])]
+                ('/etc/udev/rules.d/', ['files/udev/40-wifi.rules','files/udev/40-pipplware.rules'])],
 
+     ext_modules=[Extension('pipplware.pipInput.input', ['pipplware/pipInput/input_linux.c'],
+                             libraries=[":libudev.so"])]
  )
