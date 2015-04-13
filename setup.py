@@ -31,6 +31,4 @@ setup(name='pipplware',
                 ('/etc/init.d/', ['files/init/cec','files/init/pipplware']),
                 ('/etc/udev/rules.d/', ['files/udev/40-wifi.rules','files/udev/40-pipplware.rules'])],
 
-     ext_modules=[Extension('pipplware.pipInput.input', ['pipplware/pipInput/input_linux.c'],
-                             libraries=[":libudev.so"])]
  )
