@@ -1,6 +1,0 @@
-#!/bin/bash
-chmod u+x /etc/init.d/cec
-chmod u+x /etc/init.d/pipplware
-
-update-rc.d cec defaults
-update-rc.d pipplware defaults

@@ -1,0 +1,4 @@
+#!/bin/bash
+chmod u+x /etc/init.d/pipplware
+
+update-rc.d pipplware defaults
