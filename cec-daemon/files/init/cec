@@ -1,26 +1,24 @@
 #! /bin/sh
 ### BEGIN INIT INFO
-# Provides:          PIPPlware Daemon
-# Required-Start:    $remote_fs $syslog
-# Required-Stop:     $remote_fs $syslog
+# Provides:          cec
+# Required-Start:    $syslog
+# Required-Stop:     $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: PIPPlware Daemon
-# Description:       PIPPlware Daemon
+# Short-Description: cec Daemon
+# Description:       cec Daemon
 ### END INIT INFO
 
-# Author: Michael Gorven <michael@gorven.za.net>
+# Author: Filipe Teixeira <teixeiras@gmail.com>
 
-# PATH should only include /usr/* if it runs after the mountnfs.sh script
-PATH=/sbin:/usr/sbin:/bin:/usr/bin
+åPATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="Cec Daemon"
 NAME=cec-daemon
-STARTAS=/usr/local/bin/cec-daemon
 DAEMON=/bin/sh
 DAEMON_ARGS=""
 PIDFILE=/var/run/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
-GEOMETRY=/var/run/kodi.fbset
+
 
 # Defaults
 ENABLED=0
