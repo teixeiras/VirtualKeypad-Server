@@ -22,7 +22,7 @@ setup(name='pipplware',
                 'pipplware.pipInput'
                 ],
       entry_points = {
-        'console_scripts':['/usr/bin/pipplware=pipplware:main']
+        'console_scripts':['pipplware=pipplware:main']
     },
     data_files=[('/etc/pipplware/', ['files/daemon.cfg']),
                 ('/etc/init.d/', ['files/init/pipplware']),
