@@ -1,6 +1,8 @@
 import ConfigParser
 import os
 
+from pipplware.pipLog import pipLog
+
 class ClassProperty(property):
     def __get__(self, cls, owner):
         return self.fget.__get__(None, owner)()
@@ -39,7 +41,7 @@ class pipConfig(object):
             self.configFile = "/etc/pipplware/daemon.cfg"
 
         if os.path.isfile(self.configFile):
-            print "Using config file " + self.configFile
+            pipLog.sharedInstance.debug("Using config file " + self.configFile)
             pipConfig.config.read(self.configFile)
 
 

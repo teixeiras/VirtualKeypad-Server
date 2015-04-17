@@ -3,8 +3,10 @@ import sys
 import traceback
 from sys import platform as _platform
 
+from pipplware.pipLog import pipLog
+
 import psutil
-from pipplware.web import vcgencmd
+from pipplware.web.vcgencmd import vcgencmd
 
 
 class pipPSUtil(object):
@@ -12,17 +14,19 @@ class pipPSUtil(object):
         psutil.cpu_percent(interval=1.0, percpu=True)
 
     def kill_process(self, processId):
-        print "Kill process"+ processId
+        pipLog.sharedInstance.debug( "Kill process"+ processId)
 
         p = psutil.Process(int(float(processId)))
         p.terminate()
 
 
     def suspend_process(self, processId):
+        pipLog.sharedInstance.debug( "Suspense process"+ processId)
         p = psutil.Process(int(float(processId)))
         p.suspend()
 
     def resume_process(self, processId):
+        pipLog.sharedInstance.debug( "Resume process"+ processId)
         p = psutil.Process(int(float(processId)))
         p.resume()
 
@@ -68,13 +72,13 @@ class pipPSUtil(object):
         output["processes"] = processes
         if _platform != "darwin":
 
-            output['ClockFrequencies']={"sources": vcgencmd.frequency_sources(),
-                                        "value": vcgencmd.measure_clock}
+           # output['ClockFrequencies']={"sources": vcgencmd.frequency_sources(),
+           #                             "value": vcgencmd.measure_clock}
 
             output['Voltages']={"sources": vcgencmd.voltage_sources(),
                                 "value": vcgencmd.measure_volts}
 
-            output['Temperatures']={"values": vcgencmd.measure_temp()}
+            #output['Temperatures']={"values": vcgencmd.measure_temp()}
 
             output['Codecs']={"sources": vcgencmd.codec_sources(),
                                 "value": vcgencmd.codec_enabled}

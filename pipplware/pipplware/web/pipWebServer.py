@@ -10,8 +10,9 @@ from pipplware.pipInput import pipInput
 from pipplware.web import pipTransmission
 from pipplware.web.bottle_websocket import GeventWebSocketServer
 from pipplware.web.bottle_websocket import websocket
+from pipplware.pipLog import pipLog
 
-
+print
 
 
 
@@ -21,9 +22,9 @@ from pipplware.web.bottle_websocket import websocket
 try:
     imp.find_module('psutil')
 except ImportError:
-    print "You need to install psutil modules"
-    print "sudo pip install psutil"
-    print "No pip? sudo apt-get install build-essential python-dev python-pip"
+    pipLog.sharedInstance.debug( "You need to install psutil modules")
+    pipLog.sharedInstance.debug( "sudo pip install psutil")
+    pipLog.sharedInstance.debug( "No pip? sudo apt-get install build-essential python-dev python-pip")
 
 
 def sendSuccess():
@@ -93,10 +94,10 @@ util = pipPSUtil.pipPSUtil()
 @get("/info")
 @auth_basic(check_pass)
 def InfoRequest():
-    output = {"bonjour_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "bonjour")),
-              "webservice_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "webservice")),
-              "pipCec_actice": bool(pipConfig.sharedInstance.get(pipConfig.SECTION_MODULES, "cec")),
-              "token":piSession.generateToken()
+    output = {"bonjour_actice": pipConfig.sharedInstance.getboolean(pipConfig.SECTION_MODULES, "bonjour"),
+              "webservice_actice": pipConfig.sharedInstance.getboolean(pipConfig.SECTION_MODULES, "webservice"),
+              "pipCec_actice": pipConfig.sharedInstance.getboolean(pipConfig.SECTION_MODULES, "cec"),
+              "token":piSession.piSession.generateToken()
     }
 
     return sendMessage(json.dumps(output))
@@ -125,20 +126,20 @@ def TransmissionRequest():
 @post("/transmission_add")
 @auth_basic(check_pass)
 def TransmissionAddRequest():
-    print "Add torrent"
+    pipLog.sharedInstance.debug("Add torrent")
 
     uri = request.forms.get('uri')
 
     if len(uri) == 0:
         sendError("Missing arguments")
         return
-    print  "The url to be added" + uri
+    pipLog.sharedInstance.debug("The url to be added" + uri)
     return sendMessage(transmission.add(uri))
 
 @post("/transmission_add_file")
 @auth_basic(check_pass)
 def TransmissionAddRequest():
-    print "Add torrent by file"
+    pipLog.sharedInstance.debug("Add torrent by file")
 
     file = request.forms.get('file')
     if len(file) == 0:
@@ -155,7 +156,7 @@ def TransmissionAddRequest():
 @post("/key")
 @auth_basic(check_pass)
 def KeyRequest():
-    print  "The key is " + request.forms.get('key')
+    pipLog.sharedInstance.debug( "The key is " + request.forms.get('key'))
     pipInput.pipInput.sharedInstance.sendKeyUsingKeyCode(request.forms.get('key'))
     return sendSuccess
 
@@ -187,7 +188,7 @@ def echo(ws):
             continue
 
         data = json.loads(msg)
-        print("Got message: %s" % json.dumps(data, sort_keys=True, indent=4, separators=(',', ': ')))
+        pipLog.sharedInstance.debug("Got message: %s" % json.dumps(data, sort_keys=True, indent=4, separators=(',', ': ')))
 
         if data["action"] == "key":
             if "key" in data["content"]:
@@ -197,14 +198,14 @@ def echo(ws):
 
         if data["action"] == "session":
             token=data["content"]["token"]
-            print token
+
 
 
         if data["action"] == "mouse":
             pipInput.pipInput.sharedInstance.moveMouse(int(data["content"]["X"]),int(data["content"]["Y"]))
 
         if data["action"] == "button":
-            print "mouse click " + data["content"]["button"]
+            pipLog.sharedInstance.debug(  "mouse click " + data["content"]["button"])
             if data["content"]["button"] == "2":
                 pipInput.pipInput.sharedInstance.clickMouseLeft()
             if data["content"]["button"] == "3":
@@ -218,9 +219,9 @@ class pipWebServer(object):
         self.port = port
 
     def start_module(self):
-        print "Webservice at port: " + str(self.port)
+        pipLog.sharedInstance.debug(  "Webservice at port: " + str(self.port))
         try:
             run(host='0.0.0.0', port=self.port, debug=True, server=GeventWebSocketServer)
         except KeyboardInterrupt:
-            print("System exiting....")
+            pipLog.sharedInstance.debug("System exiting....")
             os._exit(0)

@@ -8,10 +8,11 @@ def main():
     import pipCec
     from pipplware.pipBonjour import pipBonjour
     from pipplware.web import pipWebServer
+    import pipLog
 
+    pipLog.pipLog()
     pipInputObject = pipInput.pipInput()
     pipConfig = pipConfig()
-
 
     name =  pipConfig.sharedInstance.get(pipConfig.SECTION_NETWORK_SETTINGS,"name")
     regtype =  pipConfig.sharedInstance.get(pipConfig.SECTION_NETWORK_SETTINGS,"regtype")

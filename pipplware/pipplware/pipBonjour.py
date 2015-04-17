@@ -2,13 +2,14 @@ import select
 
 from pipplware import pybonjour
 
+from pipplware.pipLog import pipLog
 
 def register_callback(sdRef, flags, errorCode, name, regtype, domain):
 	    if errorCode == pybonjour.kDNSServiceErr_NoError:
-	        print 'Registered service:'
-	        print '  name    =', name
-	        print '  regtype =', regtype
-	        print '  domain  =', domain
+	        pipLog.sharedInstance.debug('Registered service:')
+	        pipLog.sharedInstance.debug('  name    ='+ name)
+	        pipLog.sharedInstance.debug('  regtype ='+ regtype)
+	        pipLog.sharedInstance.debug('  domain  ='+ domain)
 
 class pipBonjour(object):
 	def __init__(self,name,regtype, port):

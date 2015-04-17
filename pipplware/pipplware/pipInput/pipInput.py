@@ -9,9 +9,9 @@ class ClassProperty(property):
 
 class pipInput(object):
     instance = ""
-    gamepads = []
-    mouse=""
-    keyboard=""
+    gamepads = None
+    mouse=None
+    keyboard=None
 
     @ClassProperty
     @classmethod
@@ -20,11 +20,16 @@ class pipInput(object):
 
     def __init__(self):
         pipInput.instance = self
+
+
+    def initKeyboard(self):
         keys = []
         for key in keyMapAndroid.keyMap:
             keys.append(keyMapAndroid.keyMap[key])
 
         self.keyboard = customInput.Device(keys, name="pipplware-keyboard")
+
+    def initMouse(self):
         events = (
             customInput.REL_X,
             customInput.REL_Y,
@@ -33,6 +38,7 @@ class pipInput(object):
         )
         self.mouse = customInput.Device(events, name="pipplware-mouse")
 
+    def initGamepad(self):
         gamepadKeys= [customInput.BTN_X,
                       customInput.BTN_Y,
                       customInput.BTN_Z,
@@ -48,13 +54,22 @@ class pipInput(object):
             self.gamepads.append(customInput.Device(gamepadKeys, name="pipplware_gamepad_"+str(i)))
 
     def sendKeyUsingEvent(self, event):
+        if self.keyboard == None:
+            self.initKeyboard()
+
         self.keyboard.emit_click(event)
 
     def sendKeyUsingKeyCode(self, keyCode):
+        if self.keyboard == None:
+            self.initKeyboard()
+
         print "key " + keyCode + " will be sent"
         self.keyboard.emit_click([0x01, int(keyCode)])
 
     def sendMultiKeyUsingKeyCode(self, keyCodes):
+        if self.keyboard == None:
+            self.initKeyboard()
+
         combo = [];
         for key in keyCodes :
             combo.append([0x01, int(key)])
@@ -62,18 +77,27 @@ class pipInput(object):
 
 
     def moveMouse(self, X, Y):
+        if self.mouse == None:
+            self.initMouse()
         print "Mouse moved"
         self.mouse.emit(customInput.REL_X, X, syn=False)
         self.mouse.emit(customInput.REL_Y, Y)
 
     def clickMouseLeft(self):
+        if self.mouse == None:
+            self.initMouse()
         print "Left mouse clicked"
         self.mouse.emit_click(customInput.BTN_LEFT)
 
     def clickMouseRight(self):
+        if self.mouse == None:
+            self.initMouse()
         print "Right mouse clicked"
         self.mouse.emit_click(customInput.BTN_RIGHT)
 
 
     def gamepadPressOn(self, joy, key):
+        if self.gamepads == None:
+            self.initGamepad()
+
         self.gamepads[joy].emit_click(key)
