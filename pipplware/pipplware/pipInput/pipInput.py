@@ -39,6 +39,7 @@ class pipInput(object):
         self.mouse = customInput.Device(events, name="pipplware-mouse")
 
     def initGamepad(self):
+        self.gamepads=[]
         gamepadKeys= [customInput.BTN_X,
                       customInput.BTN_Y,
                       customInput.BTN_Z,
@@ -100,4 +101,37 @@ class pipInput(object):
         if self.gamepads == None:
             self.initGamepad()
 
-        self.gamepads[joy].emit_click(key)
+        if key == '5':
+            input = customInput.BTN_X
+
+        if key == '6':
+            input = customInput.BTN_Y
+
+        if key == '7':
+            input = customInput.BTN_Z
+
+        if key == '2':
+            input = customInput.BTN_A
+
+        if key == '3':
+            input = customInput.BTN_B
+
+        if key == '4':
+            input = customInput.BTN_C
+
+        if key == '1':
+            input = customInput.BTN_SELECT
+
+        if key == '0':
+            input = customInput.BTN_START
+
+        print "key" + str(key) + "was pressed"
+        self.gamepads[joy].emit_click(input)
+
+    def gamepadMove(self, joy, xaxis, yaxis):
+        if self.gamepads == None:
+            self.initGamepad()
+
+        print "joy moved" + str(xaxis) + "," + str(yaxis)
+        self.gamepads[joy].emit(customInput.ABS_X, 5 * xaxis, syn=False)
+        self.gamepads[joy].emit(customInput.ABS_Y, 5 * yaxis)

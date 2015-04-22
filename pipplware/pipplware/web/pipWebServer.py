@@ -1,6 +1,4 @@
-import subprocess
-import imp, os
-import json
+import subprocess, imp, os, traceback, json
 
 from bottle import request, run, post, get, auth_basic
 from pipplware.pipConfig import pipConfig
@@ -11,8 +9,6 @@ from pipplware.web import pipTransmission
 from pipplware.web.bottle_websocket import GeventWebSocketServer
 from pipplware.web.bottle_websocket import websocket
 from pipplware.pipLog import pipLog
-
-print
 
 
 
@@ -178,41 +174,67 @@ def packageList():
     for item in acquire.items:
         output["packages"].append(item.desc_uri)
 
+    pipLog.sharedInstance.debug("APT:"+json.dumps(output))
+
     return sendMessage(json.dumps(output))
 
 @get('/websocket', apply=[websocket])
 def echo(ws):
+    joydev = joydev_available()
+
     while True:
-        msg = ws.receive()
-        if len(msg) == 0:
-            continue
+        try:
+            msg = ws.receive()
+            if msg is None:
+                break
 
-        data = json.loads(msg)
-        pipLog.sharedInstance.debug("Got message: %s" % json.dumps(data, sort_keys=True, indent=4, separators=(',', ': ')))
+            data = json.loads(msg)
+            pipLog.sharedInstance.debug("Got message: %s" % json.dumps(data, sort_keys=True, indent=4, separators=(',', ': ')))
 
-        if data["action"] == "key":
-            if "key" in data["content"]:
-                keys = data["content"]["key"].split(",")
-                pipInput.pipInput.sharedInstance.sendMultiKeyUsingKeyCode(keys)
-
-
-        if data["action"] == "session":
-            token=data["content"]["token"]
+            if data["action"] == "key":
+                if "key" in data["content"]:
+                    keys = data["content"]["key"].split(",")
+                    pipInput.pipInput.sharedInstance.sendMultiKeyUsingKeyCode(keys)
 
 
+            if data["action"] == "session":
+                token=data["content"]["token"]
 
-        if data["action"] == "mouse":
-            pipInput.pipInput.sharedInstance.moveMouse(int(data["content"]["X"]),int(data["content"]["Y"]))
+            if data["action"] == "pad":
+                if "button" in data["content"]:
+                    pipInput.pipInput.sharedInstance.gamepadPressOn(0, data["content"]["button"])
 
-        if data["action"] == "button":
-            pipLog.sharedInstance.debug(  "mouse click " + data["content"]["button"])
-            if data["content"]["button"] == "2":
-                pipInput.pipInput.sharedInstance.clickMouseLeft()
-            if data["content"]["button"] == "3":
-                pipInput.pipInput.sharedInstance.clickMouseRight()
+                if "xaxis" in data["content"] and "yaxis" in data["content"]:
+                    pipInput.pipInput.sharedInstance.gamepadMove(int(data["content"]["xaxis"]),int(data["content"]["yaxis"]))
 
-        ws.send(sendSuccess)
 
+            if data["action"] == "mouse":
+                pipInput.pipInput.sharedInstance.moveMouse(int(data["content"]["X"]),int(data["content"]["Y"]))
+
+            if data["action"] == "button":
+                pipLog.sharedInstance.debug(  "mouse click " + data["content"]["button"])
+                if data["content"]["button"] == "2":
+                    pipInput.pipInput.sharedInstance.clickMouseLeft()
+                if data["content"]["button"] == "3":
+                    pipInput.pipInput.sharedInstance.clickMouseRight()
+
+            ws.send(sendSuccess)
+        except:
+            print traceback.format_exc()
+
+    joydev_free(joydev)
+
+joydevices=[1,2,3,4]
+
+def joydev_free(joydev):
+    pipLog.sharedInstance.debug("Device "+ str(joydev) + " free")
+    joydevices.append(joydev)
+
+def joydev_available():
+    device = joydevices[0]
+    pipLog.sharedInstance.debug("Device "+ str(device) + " given")
+    joydevices.remove(device)
+    return device
 
 class pipWebServer(object):
     def __init__(self, port):

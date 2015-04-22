@@ -20,3 +20,4 @@ class pipLog(object):
 
     def debug(self, message):
         syslog.syslog(syslog.LOG_DEBUG, message)
+        print message

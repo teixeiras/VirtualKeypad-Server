@@ -6,7 +6,7 @@ from sys import platform as _platform
 from pipplware.pipLog import pipLog
 
 import psutil
-from pipplware.web.vcgencmd import vcgencmd
+#from pipplware.web.vcgencmd import vcgencmd
 
 
 class pipPSUtil(object):
@@ -70,6 +70,7 @@ class pipPSUtil(object):
                 print '-'*60
 
         output["processes"] = processes
+        """
         if _platform != "darwin":
 
            # output['ClockFrequencies']={"sources": vcgencmd.frequency_sources(),
@@ -85,6 +86,6 @@ class pipPSUtil(object):
 
             output['MemoryAllocation']={"sources": vcgencmd.memory_sources(),
                                 "value": vcgencmd.get_mem}
-
+        """
 
         return json.dumps(output)
